@@ -104,6 +104,8 @@ data class Likes(
     val canPublish: Boolean
 ) {}
 
+class PostNotFoundException : RuntimeException() {}
+
 data class Comment(
     val id: Int,
     val fromId: Int,
@@ -146,22 +148,28 @@ object WallService {
         return false
     }
 
-    fun createComment(postId: Int, newComment: Comment): Comment {
-        if (postId == newComment.id) {
-            comment += newComment.copy(id = nextId++)
-        }
-        return comment.last()
-    }
+    fun createComment(postId: Int, newComment: Comment)  {
 
-    fun main(args: Array<String>) {
-        var videos = Video(1, 2, "title", "description", "duration")
-        WallService.addVideo(videos)
-        var audios = Audio(1, 2, "title", "description", "duration")
-        WallService.addAudio(audios)
-        var post = Post(3, 15, 10, 12, 10, "hello", 1, 1, date = 16688636)
-        var posts = Post(4, 15, 10, 12, 10, "hello", 1, 1, date = 116688637)
-        var comment = Comment(2, 3, 123456, "text")
-        WallService.createComment(2, comment)
-        println(WallService.add(posts))
-        println(WallService.update(posts))
+        try {
+            if (postId == newComment.id) {
+                comment += newComment.copy(id = nextId++)
+            }
+            println("Пост найден")
+        } catch (e: PostNotFoundException) {
+            println("Пост не найден")
+        }
     }
+}
+
+fun main(args: Array<String>) {
+    var videos = Video(1, 2, "title", "description", "duration")
+    WallService.addVideo(videos)
+    var audios = Audio(1, 2, "title", "description", "duration")
+    WallService.addAudio(audios)
+    var post = Post(3, 15, 10, 12, 10, "hello", 1, 1, date = 16688636)
+    var posts = Post(4, 15, 10, 12, 10, "hello", 1, 1, date = 116688637)
+    var comment = Comment(2, 3, 123456, "text")
+    WallService.createComment(2, comment)
+    println(WallService.add(posts))
+    println(WallService.update(posts))
+}
