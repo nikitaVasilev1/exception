@@ -104,7 +104,7 @@ data class Likes(
     val canPublish: Boolean
 ) {}
 
-class PostNotFoundException : RuntimeException() {}
+class PostNotFoundException(message: String) : RuntimeException(message) {}
 
 data class Comment(
     val id: Int,
@@ -148,15 +148,11 @@ object WallService {
         return false
     }
 
-    fun createComment(postId: Int, newComment: Comment)  {
-
-        try {
-            if (postId == newComment.id) {
-                comment += newComment.copy(id = nextId++)
-            }
-            println("Пост найден")
-        } catch (e: PostNotFoundException) {
-            println("Пост не найден")
+    fun createComment(postId: Int, newComment: Comment) {
+        for ((index, post) in posts.withIndex()) {
+            if (post.id == postId) {
+                comment[index] = newComment.copy()
+            } else throw PostNotFoundException ("нет поста с id $postId")
         }
     }
 }
@@ -166,10 +162,9 @@ fun main(args: Array<String>) {
     WallService.addVideo(videos)
     var audios = Audio(1, 2, "title", "description", "duration")
     WallService.addAudio(audios)
-    var post = Post(3, 15, 10, 12, 10, "hello", 1, 1, date = 16688636)
     var posts = Post(4, 15, 10, 12, 10, "hello", 1, 1, date = 116688637)
-    var comment = Comment(2, 3, 123456, "text")
-    WallService.createComment(2, comment)
+    var comment = Comment(10, 3, 123456, "text")
+    WallService.createComment(10, comment)
     println(WallService.add(posts))
     println(WallService.update(posts))
 }
